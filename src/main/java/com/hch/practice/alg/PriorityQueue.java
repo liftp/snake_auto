@@ -1,4 +1,4 @@
-package com.hch.practice;
+package com.hch.practice.alg;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;

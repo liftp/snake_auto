@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import com.hch.practice.AStar;
+import com.hch.practice.alg.AStar;
 
 public class PathSelectAlgAstarImpl implements PathSelectAlgorithm {
 

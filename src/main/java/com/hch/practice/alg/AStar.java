@@ -1,4 +1,4 @@
-package com.hch.practice;
+package com.hch.practice.alg;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +25,7 @@ public class AStar {
      */
     public List<GSingleBody> search(int[][] grid, LinkedList<GSingleBody> snakeBods, GSingleBody end, BiFunction<GSingleBody, GSingleBody, Boolean> checkBoundry) {
 
-        //TODO closed默认放入snake bodys
+        // 保存走过的路径
         Map<String, GSingleBody> closed = new HashMap<>();
         //excludes.forEach(e -> closed.put(e.getX() + "," + e.getY(), e));
 

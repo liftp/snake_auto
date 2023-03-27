@@ -1,6 +1,9 @@
-package com.hch.practice.snake;
+package com.hch.practice;
 
 import javax.swing.JFrame;
+
+import com.hch.practice.snake.ShowFrame;
+
 import java.awt.EventQueue;
 
 public class App {
