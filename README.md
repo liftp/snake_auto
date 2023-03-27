@@ -6,4 +6,4 @@
 * 初版存留问题：Astar算法可能会导致snake进入闭环,从而结束游戏；未进行分值展示；未设置地图障碍
 * 展示：
 
-![](C:\Users\han.Mr\Pictures\Camera Roll\snake.png)
+![image](https://github.com/liftp/snake_auto/blob/main/src/main/resources/img/snake.png?raw=true)
