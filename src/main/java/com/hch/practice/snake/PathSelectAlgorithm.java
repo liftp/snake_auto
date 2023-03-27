@@ -3,7 +3,6 @@ package com.hch.practice.snake;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 
 public interface PathSelectAlgorithm {

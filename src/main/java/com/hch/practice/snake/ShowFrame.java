@@ -13,10 +13,11 @@ import java.awt.BasicStroke;
 
 import javax.swing.WindowConstants;
 
+import com.hch.practice.snake.impl.GControlImpl;
+import com.hch.practice.snake.impl.GMapImpl;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyAdapter;
-import java.awt.event.KeyListener;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,12 +34,11 @@ public class ShowFrame extends JFrame {
     
     // 控制器类
     private GIControl control;
-    // 地图信息接口
-    private GMap map;
     // 定时重绘
     private ScheduledExecutorService executor;
-    // 全局事件
+    // 当前状态事件，只是该对象的状态记录，不操作control的状态，TODO 后续可以优化为全局事件
     private GEvent event;
+    // 实际内容的画板，paint方法实现地图信息绘制，repaint方法被定时任务调用实现刷新绘制
     private JPanel jp;
 
     // 方向操作校验map
@@ -58,20 +58,21 @@ public class ShowFrame extends JFrame {
 
     public ShowFrame() {
         super();
-        map = new GMapImpl();
         System.out.println("map ok");
-        control = new GControlImpl(map, true);
+        control = new GControlImpl(true);
         event = GEvent.PREPARE;
 
+        // JFrame的简单操作
         this.setTitle("贪吃蛇");
-        this.setSize(560, 600);
+        this.setSize(560, 600); // 框体大小
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.setLocationRelativeTo(null);
+        this.setLocationRelativeTo(null);   // 展示位于中心
         this.setLayout(new BorderLayout());
-        this.setVisible(true);
-        jp = initPanel();
+        this.setVisible(true);              // 可见
+        jp = initPanel();                      // JPanel绘制及添加
         this.add(jp);
 
+        // 按键事件监听
         this.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -155,7 +156,7 @@ public class ShowFrame extends JFrame {
             graph2D.setColor(Color.RED);
             int marginTop = 20, marginLeft = 20, blockWidth = 10;
             //TODO 该线程应该只读map，但这里没有限制，应该优化
-            int[][] mapArr = map.getMap();
+            final int[][] mapArr = control.mapShow();
             int mapLen = mapArr.length;
             // 外框宽高取map长度方形
             graph2D.drawRect(marginTop, marginLeft, mapLen * blockWidth,  mapLen * blockWidth);

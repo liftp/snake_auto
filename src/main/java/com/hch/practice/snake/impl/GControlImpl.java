@@ -1,4 +1,4 @@
-package com.hch.practice.snake;
+package com.hch.practice.snake.impl;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -10,6 +10,14 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import com.hch.practice.snake.GAction;
+import com.hch.practice.snake.GEvent;
+import com.hch.practice.snake.GIControl;
+import com.hch.practice.snake.GMap;
+import com.hch.practice.snake.GMapEle;
+import com.hch.practice.snake.GSingleBody;
+import com.hch.practice.snake.PathSelectAlgorithm;
+
 public class GControlImpl implements GIControl {
     
     // 运动方向处理
@@ -18,23 +26,23 @@ public class GControlImpl implements GIControl {
     // 运动处理定时任务
     private ScheduledExecutorService executor;
 
-    private GSingleBody foodPos;      // 食物位置
+    private GSingleBody foodPos;        // 食物位置
 
-    private int snakeLen = 3;
+    private int snakeLen = 3;           // 默认长度
 
-    private GEvent event; // 当前状态
+    private GEvent event;               // 当前状态
 
     private LinkedList<GSingleBody> snakeBodys;
 
-    private int velicity = 300; // 每个位置移动的毫秒数
+    private int velicity = 300;         // 每个位置移动的毫秒数
 
-    private long lastTime;      // 定时任务使用计时
+    private long lastTime;              // 定时任务使用计时
 
-    private long lastActionTime;      // 动作使用计时
+    private long lastActionTime;        // 动作使用计时
 
     private PathSelectAlgorithm algorithm;  // 自动寻路算法
     
-    private GMap map;
+    private GMap map;                   // 地图信息接口
 
     private boolean isAuto;             // 自动寻迹开关
 
@@ -50,10 +58,10 @@ public class GControlImpl implements GIControl {
     
         
 
-    public GControlImpl(GMap map, boolean isAuto) {
-        this.map = map;
+    public GControlImpl(boolean isAuto) {
+        this.map = new GMapImpl();
         this.isAuto = isAuto;
-        if (isAuto) velicity = 100;
+        if (isAuto) velicity = 100; // 自动寻路速度较快
         init();
         algorithm = new PathSelectAlgAstarImpl();
         System.out.println("control ok");
@@ -109,6 +117,7 @@ public class GControlImpl implements GIControl {
     public void resetSchedual() {
         executor =  Executors.newSingleThreadScheduledExecutor();
         lastTime = System.currentTimeMillis();
+        // 实际上定时任务的延时和velocity同时控制移动速度
         executor.scheduleAtFixedRate(this::runAction, 100, 100, TimeUnit.MILLISECONDS);
     }
 
@@ -116,11 +125,16 @@ public class GControlImpl implements GIControl {
      * 关闭定时任务
      */
     public void clearSchedule() {
+        // 停止运动清除定时器
         if (executor != null ) {
             executor.shutdown();
+            executor = null;
         }
     }
 
+    /**
+     * 实际上运动动作调用，被定时器直接调用
+     */
     public void runAction() {
 
         long thisTime = System.currentTimeMillis();
@@ -216,17 +230,6 @@ public class GControlImpl implements GIControl {
 
     private void moveToDest(GSingleBody head, int x, int y) {
         int[][] map = mapShow();
-        // GSingleBody oldFood = null;
-        // // 吃到食物 长度+1
-        // if (head.posEquals(foodPos)) {
-        //     // 食物转body
-        //     map[foodPos.getX()][foodPos.getY()] = GMapEle.SNAKE.getVal();
-        //     // snakeLen += 1;
-        //     oldFood = foodPos;
-        //     // 继续随机产生食物
-        //     makeFood();
-        //     System.out.println("吃到食物");
-        // } 
         // 运行前校验，通过后继续运行，否则结束
         if (checkBoundary(map.length, head, new GSingleBody(x, y))) {
             // 如果有食物，将食物放到最前面，否则取最后一个放到头部
@@ -276,11 +279,5 @@ public class GControlImpl implements GIControl {
     public int[][] mapShow() {
         return map.getMap();
     }
-
-    @Override
-    public int bodyLen() {
-        return snakeBodys.size();
-    }
-
 
 }

@@ -1,4 +1,6 @@
-package com.hch.practice.snake;
+package com.hch.practice.snake.impl;
+
+import com.hch.practice.snake.GMap;
 
 public class GMapImpl implements GMap {
 

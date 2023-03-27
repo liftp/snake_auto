@@ -1,4 +1,4 @@
-package com.hch.practice.snake;
+package com.hch.practice.snake.impl;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import com.hch.practice.alg.AStar;
+import com.hch.practice.snake.GMap;
+import com.hch.practice.snake.GSingleBody;
+import com.hch.practice.snake.PathSelectAlgorithm;
 
 public class PathSelectAlgAstarImpl implements PathSelectAlgorithm {
 
