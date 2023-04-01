@@ -14,12 +14,12 @@ import java.awt.BasicStroke;
 import javax.swing.WindowConstants;
 
 import com.hch.practice.snake.impl.GControlImpl;
-import com.hch.practice.snake.impl.GMapImpl;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyAdapter;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -158,13 +158,25 @@ public class ShowFrame extends JFrame {
             //TODO 该线程应该只读map，但这里没有限制，应该优化
             final int[][] mapArr = control.mapShow();
             int mapLen = mapArr.length;
+            // 框内刷黑，后续避免频繁画空处
             // 外框宽高取map长度方形
             graph2D.drawRect(marginTop, marginLeft, mapLen * blockWidth,  mapLen * blockWidth);
+            // 边框绘制下标
+            graph2D.setColor(Color.WHITE);
+            for (int i = 0; i < mapLen; i += 5) {
+                graph2D.drawString(i + "", marginLeft + (i*blockWidth), marginTop);
+                graph2D.drawString(String.format("%2d", i), marginLeft - (2 * blockWidth - 5), marginTop + ((i+1)*blockWidth) );
+            }
+            
+            graph2D.fillRect(marginTop + strokeWidth, marginLeft + strokeWidth, 
+                (mapLen * blockWidth) - strokeWidth,  (mapLen * blockWidth) - strokeWidth);
             // 框内刷黑，后续避免频繁画空处
             graph2D.setColor(Color.BLACK);
             graph2D.fillRect(marginTop + strokeWidth, marginLeft + strokeWidth, 
                 (mapLen * blockWidth) - strokeWidth,  (mapLen * blockWidth) - strokeWidth);
             
+            
+            List<GMapEle> directions = Arrays.asList(GMapEle.LEFT, GMapEle.RIGHT, GMapEle.TOP, GMapEle.BOTTOM);
             // 画每一个map中的元素，默认50*50，body,wall,food...
             for (int i = 0; i < mapLen; i++) {
                 for (int j = 0; j < mapLen; j++) {
@@ -178,7 +190,11 @@ public class ShowFrame extends JFrame {
                         // 矩形框绘制
                         // graph2D.drawRect(marginTop * (x+1), marginLeft * (y+1), blockWidth, blockWidth);
                         // 矩形填充
-                        graph2D.fillRect(marginTop + (x*blockWidth), marginLeft + (y*blockWidth), blockWidth, blockWidth);
+                        if (directions.contains(v)) {
+                            graph2D.drawString(v.getName(), marginLeft + (x*blockWidth), marginTop + ((y+1)*blockWidth));
+                        } else {
+                            graph2D.fillRect(marginTop + (x*blockWidth), marginLeft + (y*blockWidth), blockWidth, blockWidth);
+                        }
                         // 绘制矩形
                         return v;
                     });

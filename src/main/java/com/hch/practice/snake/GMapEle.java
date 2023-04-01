@@ -6,7 +6,11 @@ public enum GMapEle {
     SNAKE(2, "snake", Color.green),
     WALL(1, "wall", Color.white),
     FOOD(3, "food", Color.yellow),
-    PASS(0, "pass", Color.black);
+    PASS(0, "pass", Color.black),
+    LEFT(5, "<", Color.white),
+    RIGHT(7, ">", Color.white),
+    TOP(4, "^", Color.white),
+    BOTTOM(8, "v", Color.white);
 
     private int val;
     private String name;

@@ -39,21 +39,22 @@ public class AStar {
 
         PriorityQueue<PathCost> call = new PriorityQueue<>();
 
-        call.add(new PathCost(f, g, start.getX(), start.getY()));
+        call.add(new PathCost(f, g, start.getX(), start.getY(), start.getDirection()));
 
         boolean found = false;
         while (!found) {
             PathCost nextCall = call.poll();
             int x = nextCall.getX();
             int y = nextCall.getY();
-            action.add(new GSingleBody(x, y));
+            action.add(new GSingleBody(x, y, nextCall.getDirection()));
             // int cost = nextCall.getCost();
 
             if (x == end.getX() && y == end.getY()) {
                 found = true;
             } else {
+                // 每个方向试探，选取最小可行路径
                 for (GAction act : GAction.values()) {
-                    int x2 = x, y2 = y;
+                    int x2 = x, y2 = y, direction = act.getDirection();
                     switch(act) {
                         case LEFT:      x2 -= 1;break;
                         case RIGHT:     x2 += 1;break;
@@ -64,17 +65,17 @@ public class AStar {
                     boolean isBack = true;
                     
                     // 路径可行且在边界中里
-                    GSingleBody temp = new GSingleBody(x2, y2);
+                    GSingleBody temp = new GSingleBody(x2, y2, direction);
                     if (checkBoundry.apply(new GSingleBody(x, y), new GSingleBody(x2, y2))) {
-                        // 模拟前进，保证snakeBods处在当前位置
+                        // 模拟前进，保证snakeBodys处在当前位置
                         GSingleBody backBody = simulateToNextOrBack(grid, snakeBods, x2, y2, false);
                         // 未走过的路径
                         String pos = String.format("%s,%s", x2, y2);
-                        // System.out.println(pos);
+                        // 下一步未走过
                         if (!closed.containsKey(pos)) {
                             int g2 = g + 1;
                             int f2 = g2 + calcManhattanDistance(temp, end);
-                            call.add(new PathCost(f2, g2, x2, y2));
+                            call.add(new PathCost(f2, g2, x2, y2, direction));
                             closed.put(pos, temp);
                             // action.add(temp);
                             isBack = false;

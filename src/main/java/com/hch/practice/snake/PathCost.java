@@ -8,6 +8,7 @@ public class PathCost implements Comparable<PathCost> {
     // 目标坐标
     private int x;
     private int y;
+    private int direction;
     private int pathG; // 累计路径成本
 
     public int getPathG() {
@@ -30,11 +31,20 @@ public class PathCost implements Comparable<PathCost> {
         return y;
     }
 
-    public PathCost(int cost, int g, int x, int y) {
+    public int getDirection() {
+        return direction;
+    }
+
+    public void setDirection(int direction) {
+        this.direction = direction;
+    }
+
+    public PathCost(int cost, int g, int x, int y, int diretion) {
         this.cost = cost;
         this.pathG = g;
         this.x = x;
         this.y = y;
+        this.direction = diretion;
     }
 
     @Override

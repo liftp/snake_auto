@@ -109,12 +109,12 @@ public class PriorityQueue<T extends Comparable<T>> {
 
     private static void test2() {
         PriorityQueue<PathCost> q = new PriorityQueue<>();
-        q.add(new PathCost(10, 0, 1, 3));
-        q.add(new PathCost(7, 0, 10, 3));
-        q.add(new PathCost(13, 0, 2, 3));
-        q.add(new PathCost(4, 0, 1, 4));
-        q.add(new PathCost(8, 0, 5, 6));
-        q.add(new PathCost(2, 0, 7, 7));
+        q.add(new PathCost(10, 0, 1, 3, 1));
+        q.add(new PathCost(7, 0, 10, 3, 1));
+        q.add(new PathCost(13, 0, 2, 3, 1));
+        q.add(new PathCost(4, 0, 1, 4, 1));
+        q.add(new PathCost(8, 0, 5, 6, 1));
+        q.add(new PathCost(2, 0, 7, 7, 1));
 
         q.poll();
         q.poll();

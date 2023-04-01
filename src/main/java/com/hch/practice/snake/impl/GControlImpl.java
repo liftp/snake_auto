@@ -76,7 +76,7 @@ public class GControlImpl implements GIControl {
         snakeBodys = new LinkedList<>();
         for (int i = 0; i < snakeLen; i++) {
             // snake列表
-            snakeBodys.addFirst(new GSingleBody(i, 0));
+            snakeBodys.addFirst(new GSingleBody(i, 0, 2));
             // 设置snake占用数组
             mapArr[i][0] = GMapEle.SNAKE.getVal(); 
         }
@@ -158,7 +158,7 @@ public class GControlImpl implements GIControl {
         boolean skip = (Math.abs(curr.getX() - nextX) > 1 || Math.abs(curr.getY() - nextY) > 1);
         // System.out.println("条件：" + (mapShow()[x][y]));
         return nextX >= 0 && nextY >= 0 && nextX < mapLen && nextY < mapLen && !skip &&
-            (mapShow()[nextX][nextY] == GMapEle.PASS.getVal() || mapShow()[nextX][nextY] == GMapEle.FOOD.getVal());
+            (mapShow()[nextX][nextY] == GMapEle.PASS.getVal() || mapShow()[nextX][nextY] == GMapEle.FOOD.getVal() || mapShow()[nextX][nextY] > 3);
     }
 
     @Override
@@ -172,7 +172,7 @@ public class GControlImpl implements GIControl {
         // 不能反方向运动 触发则跳过操作
         System.out.println(String.format("方向将要改变: %s", action.getDesc()));
         if (this.action == reverse.get(act)) return;
-        // 不能频繁改变方向,200ms改变时长
+        // 不能频繁改变方向,150ms改变时长
         long thisTime = System.currentTimeMillis();
         if ((thisTime - lastActionTime) >= 150) {
             synchronized(this) {
@@ -188,6 +188,8 @@ public class GControlImpl implements GIControl {
         LinkedList<GSingleBody> copy = snakeBodys.stream().map(GSingleBody::copy).collect(Collectors.toCollection(LinkedList::new));
         autoPath = algorithm.getPath(map, copy, foodPos, 
             (curr, next) -> checkBoundary(map.getMap().length, curr, next));
+        // 在map上画一次踪迹路径方向，6是设置方向位置基数 +1 为right，-1为left，-2为top,+2为bottom
+        autoPath.stream().limit(autoPath.size() - 1).forEach(e -> mapShow()[e.getX()][e.getY()] = e.getDirection() + 6);
         if (autoPath.isEmpty()) {
             isAuto = false;
             System.out.println("关闭自动寻迹");
@@ -230,11 +232,14 @@ public class GControlImpl implements GIControl {
 
     private void moveToDest(GSingleBody head, int x, int y) {
         int[][] map = mapShow();
+        // 方向计算
+        GAction act = direction(head, new GSingleBody(x, y));
         // 运行前校验，通过后继续运行，否则结束
         if (checkBoundary(map.length, head, new GSingleBody(x, y))) {
             // 如果有食物，将食物放到最前面，否则取最后一个放到头部
             if (foodPos.getX() == x && foodPos.getY() == y) {
                 map[x][y] = GMapEle.SNAKE.getVal();
+                foodPos.setDirection(act.getDirection());
                 snakeBodys.addFirst(foodPos);
                 // 食物转body
                 map[foodPos.getX()][foodPos.getY()] = GMapEle.SNAKE.getVal();
@@ -248,6 +253,7 @@ public class GControlImpl implements GIControl {
                 // 弹出最后一个放到第一个位置，减少移动计算及对象产生，即蛇的移动处理
                 last.setX(x);
                 last.setY(y);
+                last.setDirection(act.getDirection());
                 map[x][y] = GMapEle.SNAKE.getVal();
                 snakeBodys.addFirst(snakeBodys.pollLast());
             }
@@ -273,6 +279,24 @@ public class GControlImpl implements GIControl {
         }
         System.out.println(String.format("makeFood x: %s, y: %s", x, y));
         
+    }
+
+    /**
+     * 根据下一步位置和上一步位置算出方向
+     * @param last      上一步
+     * @param next      下一步
+     * @return          方向枚举
+     */
+    private GAction direction(GSingleBody last, GSingleBody next) {
+        if ((next.getX() - last.getX()) == 1) {
+            return GAction.BOTTOM;
+        } else if ((next.getX() - last.getX()) == -1) { 
+            return GAction.TOP;
+        } else if ((next.getY() - last.getY()) == 1) { 
+            return GAction.RIGHT;
+        } else {
+            return GAction.LEFT;
+        }
     }
 
     @Override
